@@ -1,0 +1,41 @@
+-------1.- Estadística Básica. Cree una clase llamada Estadística que contiene como atributo una lista de números naturales la cual puede contener repetidos. Debe contener los siguientes métodos:
+-------a. Frecuencia de Números. Dada la lista, devuelve una lista de tuplas con el número de veces que aparece cada número en la lista. La tupla debe tener el número y la cantidad de veces que aparece.
+-------b. Moda. Dada la lista, devuelva la moda de la lista (el valor más repetido). Puedes usar la función anterior como ayuda.
+-------c. Histograma. Dada la lista, muestra el histograma de la lista. Puedes reusar los métodos anteriores. 
+
+class Estadistica:
+       def __init__(self, numeros):
+        self.numeros = numeros
+    
+    def frecuencia_numeros(self):
+        conteo = {}
+        for numero in self.numeros:
+            if numero in conteo:
+                conteo[numero] += 1
+            else:
+                conteo[numero] = 1
+
+        lista_frecuencias = []
+        for numero in sorted(conteo.keys()):
+            lista_frecuencias.append((numero, conteo[numero]))
+            
+        return lista_frecuencias
+    
+    def moda(self):
+        frecuencias = self.frecuencia_numeros()
+        
+        numero_mas_repetido = frecuencias[0][0] 
+        mayor_frecuencia = frecuencias[0][1]    
+        for numero, frecuencia in frecuencias:
+            if frecuencia > mayor_frecuencia:
+                numero_mas_repetido = numero
+                mayor_frecuencia = frecuencia
+        
+        return numero_mas_repetido
+    
+    def histograma(self):
+        frecuencias = self.frecuencia_numeros()
+        
+        for numero, frecuencia in frecuencias:
+            asteriscos = '*' * frecuencia
+            print(f"{numero} {asteriscos}")
