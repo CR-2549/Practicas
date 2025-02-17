@@ -1,0 +1,128 @@
+Nombre: Cristian Eduardo Robles Gomez
+Grupo: 951
+------------------------------------------------------------------------------------------------
+
+------Sistema de Reserva. Desarrolla un sistema de reservas utilizando sets. 
+------Crea conjuntos para representar habitaciones disponibles y habitaciones reservadas en un hotel. Permite a los usuarios realizar reservas, liberar habitaciones y mostrar la disponibilidad actual. 
+------NOTA: No utilizar menú,  solo las funciones , realizar las pruebas necesarias para verificar funcionamiento adecuado.
+
+class SistemaDeReserva:
+    def __init__(self, total_habitaciones):
+        self.habitaciones_disponibles = set(range(1, total_habitaciones + 1))
+        self.habitaciones_reservadas = set()
+
+    def mostrar_disponibilidad(self):
+        print(f'Habitaciones disponibles: {sorted(self.habitaciones_disponibles)}')
+        print(f'Habitaciones reservadas: {sorted(self.habitaciones_reservadas)}')
+
+    def realizar_reserva(self, habitacion):
+        if habitacion in self.habitaciones_disponibles:
+            self.habitaciones_disponibles.remove(habitacion)
+            self.habitaciones_reservadas.add(habitacion)
+            print(f'Habitación {habitacion} reservada exitosamente.')
+        else:
+            print(f'Habitación {habitacion} no disponible para reserva.')
+
+    def liberar_habitacion(self, habitacion):
+        if habitacion in self.habitaciones_reservadas:
+            self.habitaciones_reservadas.remove(habitacion)
+            self.habitaciones_disponibles.add(habitacion)
+            print(f'Habitación {habitacion} liberada exitosamente.')
+        else:
+            print(f'Habitación {habitacion} no estaba reservada.')
+
+sistema = SistemaDeReserva(total_habitaciones=10)
+
+sistema.mostrar_disponibilidad()
+
+sistema.realizar_reserva(3)
+sistema.realizar_reserva(5)
+sistema.realizar_reserva(7)
+
+sistema.mostrar_disponibilidad()
+
+sistema.liberar_habitacion(5)
+sistema.liberar_habitacion(8)
+sistema.mostrar_disponibilidad()
+
+------------------------------------------------------------------------------------------------
+
+def encriptar_mensaje(mensaje):
+    diccionario = {
+        'a': '@1', 'b': '#2', 'c': '$3', 'd': '%4', 'e': '&5',
+        'f': '*6', 'g': '!7', 'h': '?8', 'i': '+9', 'j': '-0',
+        'k': '=1', 'l': '@2', 'm': '#3', 'n': '$4', 'o': '%5',
+        'p': '&6', 'q': '*7', 'r': '!8', 's': '?9', 't': '+0',
+        'u': '-1', 'v': '=2', 'w': '@3', 'x': '#4', 'y': '$5',
+        'z': '&6', ' ': '_'
+    }
+
+    mensaje_encriptado = ''
+    for letra in mensaje.lower():
+        if letra in diccionario:
+            mensaje_encriptado += diccionario[letra]
+        else:
+            mensaje_encriptado += letra
+    return mensaje_encriptado
+
+
+def desencriptar_mensaje(mensaje_encriptado):
+    diccionario = {
+        '@1': 'a', '#2': 'b', '$3': 'c', '%4': 'd', '&5': 'e',
+        '*6': 'f', '!7': 'g', '?8': 'h', '+9': 'i', '-0': 'j',
+        '=1': 'k', '@2': 'l', '#3': 'm', '$4': 'n', '%5': 'o',
+        '&6': 'p', '*7': 'q', '!8': 'r', '?9': 's', '+0': 't',
+        '-1': 'u', '=2': 'v', '@3': 'w', '#4': 'x', '$5': 'y',
+        '&6': 'z', '_': ' '
+    }
+
+    mensaje = ''
+    i = 0
+    while i < len(mensaje_encriptado):
+        codigo = mensaje_encriptado[i:i + 2]
+        if codigo in diccionario:
+            mensaje += diccionario[codigo]
+            i += 2
+        else:
+            mensaje += mensaje_encriptado[i]
+            i += 1
+    return mensaje
+
+
+mensaje = "hola amigo"
+print("Mensaje original:", mensaje)
+encriptado = encriptar_mensaje(mensaje)
+print("Mensaje encriptado:", encriptado)
+desencriptado = desencriptar_mensaje(encriptado)
+print("Mensaje desencriptado:", desencriptado)
+
+------------------------------------------------------------------------------------------------
+
+def imprimir_inventario():
+    # Muestra todo el inventario
+    print("\nInventario actual:")
+
+    for codigo, datos in inventario.items():
+        print(
+            f"Código: {codigo} | Nombre: {datos['nombre']} | Precio: ${datos['precio']} | Cantidad: {datos['cantidad']}")
+
+
+if __name__ == "__main__":
+    agregar_producto("001", "Camisa", 29.99, 50)
+    agregar_producto("002", "Pantalón", 49.99, 30)
+    agregar_producto("003", "Zapatos", 79.99, 20)
+
+    print("\nInventario inicial:")
+    imprimir_inventario()
+
+    print("\nRealizando venta:")
+    realizar_venta("001", 2)
+
+    print("\nEditando producto:")
+    editar_producto("002", precio=39.99)
+
+    print("\nEliminando producto:")
+    eliminar_producto("003")
+
+    print("\nInventario después de las operaciones:")
+    imprimir_inventario()
