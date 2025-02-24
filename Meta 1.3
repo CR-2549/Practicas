@@ -1,0 +1,45 @@
+Nombre: Robles Gómez Cristian Eduardo
+Grupo: 951
+Fecha: 23 de febrero del 2025
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Instrucciones:
+----El alumno deberá implementar un proceso de web scraping. Para ello, desarrollará una función que reciba como parámetro el nombre de un producto a buscar dentro de una página de compras seleccionada. 
+----Esta función contendrá el código necesario para realizar la búsqueda del producto en dicha página.
+----La función deberá incluir la capacidad de visitar un número determinado de páginas de resultados de la búsqueda. Para cada una de estas páginas, se deberá capturar una imagen usando Selenium y guardar las capturas de pantalla en una carpeta específica. 
+----El número de páginas a visitar también deberá ser un parámetro de la función.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.keys import Keys
+
+def google(busqueda, pagina):
+    driver = ChromeDriverManager().install()
+    s = Service(driver)
+    opc = Options()
+    opc.add_argument("--window-size=1020,1200")
+    navegador = webdriver.Chrome(service=s, options=opc)
+    navegador.get("https://www.amazon.com.mx/")
+    time.sleep(3)
+    txtBusqueda=navegador.find_element(By.NAME, value="field-keywords")
+    txtBusqueda.send_keys(busqueda)
+    txtBusqueda.send_keys(Keys.ENTER) #ENTER
+    time.sleep(5)
+
+    for pagina in range (1, pagina+1):
+        navegador.save_screenshot(f"imagenes/{busqueda}_{pagina}.png")
+        btnSiguiente=navegador.find_element(By.LINK_TEXT, value="Siguiente")
+        btnSiguiente.click()
+        time.sleep(5)
+    navegador.quit()
+    #navegador.close()
+
+
+if __name__ == "__main__":
+    busqueda = "Control de PS5"
+    pagina = 3
+    google(busqueda, pagina)
