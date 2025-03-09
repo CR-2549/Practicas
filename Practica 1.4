@@ -1,0 +1,73 @@
+Nombre: Robles Gómez Cristian Eduardo
+Grupo: 951
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import time
+import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.keys import Keys
+from bs4 import BeautifulSoup
+import os
+
+def compra(busqueda, paginas):
+    s = Service(ChromeDriverManager().install())
+    opc = Options()
+    opc.add_argument("--window-size=1020,1200")
+    navegador = webdriver.Chrome(service=s, options=opc)
+    navegador.get("https://www.amazon.com.mx")
+    time.sleep(3)
+
+    txtBusqueda = navegador.find_element(By.ID, "twotabsearchtextbox")
+    txtBusqueda.send_keys(busqueda)
+    txtBusqueda.send_keys(Keys.ENTER)
+    time.sleep(5)
+
+    data = {"nombre": [], "precio": [], "rating": [], "fecha_entrega": []}
+
+    if not os.path.exists("imagenes"):
+        os.makedirs("imagenes")
+    if not os.path.exists("dataset"):
+        os.makedirs("dataset")
+
+    for pagina in range(1, paginas + 1):
+        navegador.save_screenshot(f"imagenes/{busqueda}_{pagina}.png")
+
+        soup = BeautifulSoup(navegador.page_source, "html.parser")
+        productos = soup.find_all("div", attrs={"data-component-type": "s-search-result"})
+
+        for producto in productos:
+            nombre_elemento = producto.find("span", class_="a-size-base-plus a-color-base a-text-normal")
+            data["nombre"].append(nombre_elemento.get_text(strip=True) if nombre_elemento else "Nombre no disponible")
+
+            precio_elemento = producto.find("span", class_="a-price-whole")
+            data["precio"].append(precio_elemento.get_text(strip=True) if precio_elemento else "Precio no disponible")
+
+            rating_elemento = producto.find("span", class_="a-icon-alt")
+            data["rating"].append(rating_elemento.get_text(strip=True) if rating_elemento else "Sin calificación")
+
+            entrega_elemento = producto.find("span", class_="a-color-base a-text-bold")
+            data["fecha_entrega"].append(entrega_elemento.get_text(strip=True) if entrega_elemento else "Fecha no disponible")
+
+        if pagina < paginas:
+            try:
+                btnSiguiente = navegador.find_element(By.CSS_SELECTOR, "a.s-pagination-next")
+                btnSiguiente.click()
+                time.sleep(3)
+            except:
+                print("No se encontraron más páginas")
+                break
+
+    df = pd.DataFrame(data)
+    print(df.sample(5))
+    df.to_csv(f"dataset/{busqueda.replace(' ', '_')}.csv", index=False)
+
+    navegador.quit()
+    return df
+
+if __name__ == "__main__":
+    busqueda = "Consola PS5"
+    paginas = 4
+    compra(busqueda, paginas)
