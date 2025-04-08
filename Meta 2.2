@@ -1,0 +1,539 @@
+-- Instrucciones. Meta 2.2 Desarrollar aplicaciones con conexión a Base de Datos.
+-- Nombre: Robles Gómez Cristian Eduardo  
+-- Grupo: 951
+----------------------------------------------------------------------------------------------------------------
+from mysql.connector import connect, Error
+
+
+class MySQLConnect:
+    def __init__(self):
+        self.host = "localhost"
+        self.user = "root"
+        self.password = "12345678"
+        self.database = "olimpiadas"
+        self.port = "3306"
+
+    def conectar(self):
+        try:
+            connection = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+            return connection
+        except Error as e:
+            print(f"Error al conectar a MySQL: {e}")
+            return None
+
+    def desconectar(self):
+        pass
+
+
+class PaisMySQL(MySQLConnect):
+    def __init__(self):
+        super().__init__()
+
+    def insertar(self, id, nombre):
+        try:
+            # Verificar si el país ya existe
+            existente = self.consultar(f"id = {id}")
+            if existente:
+                print(f"El país con ID {id} ya existe. No se insertará.")
+                return False
+
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = "INSERT INTO Pais(id, nombre) VALUES (%s, %s)"
+            valores = (id, nombre)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            print("País insertado exitosamente:", cursor.lastrowid)
+            cursor.close()
+            dbconexion.close()
+            return True
+        except Error as e:
+            print(f"Error al insertar país: {e}")
+            return False
+
+    def editar(self, id, nombre_nuevo):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+
+
+            check_sql = "SELECT COUNT(*) FROM Pais WHERE nombre = %s AND id != %s"
+            check_valores = (nombre_nuevo, id)
+            cursor.execute(check_sql, check_valores)
+            if cursor.fetchone()[0] > 0:
+                print("El nombre ya existe para otro país")
+                cursor.close()
+                dbconexion.close()
+                return False
+
+
+            update_sql = "UPDATE Pais SET nombre = %s WHERE id = %s"
+            update_valores = (nombre_nuevo, id)
+            cursor.execute(update_sql, update_valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al editar país: {e}")
+            return False
+
+    def eliminar(self, id):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = "DELETE FROM Pais WHERE id = %s"
+            valores = (id,)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al eliminar país: {e}")
+            return False
+
+    def consultar(self, filter):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = f"SELECT * FROM Pais WHERE {filter}"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            cursor.close()
+            dbconexion.close()
+            return result
+        except Error as e:
+            print(f"Error al consultar países: {e}")
+            return []
+
+
+class OlimpiadaMySQL(MySQLConnect):
+    def __init__(self):
+        super().__init__()
+
+    def insertar(self, id, year):
+        try:
+            # Verificar si la olimpiada ya existe
+            existente = self.consultar(f"id = {id}")
+            if existente:
+                print(f"La olimpiada con ID {id} ya existe. No se insertará.")
+                return False
+
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = "INSERT INTO Olimpiada(id, year_olimpiada) VALUES (%s, %s)"
+            valores = (id, year)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            print("Olimpiada insertada exitosamente:", cursor.lastrowid)
+            cursor.close()
+            dbconexion.close()
+            return True
+        except Error as e:
+            print(f"Error al insertar olimpiada: {e}")
+            return False
+
+    def editar(self, id, year_nuevo):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+
+            check_sql = "SELECT COUNT(*) FROM Olimpiada WHERE year_olimpiada = %s AND id != %s"
+            check_valores = (year_nuevo, id)
+            cursor.execute(check_sql, check_valores)
+            if cursor.fetchone()[0] > 0:
+                print("El año ya existe para otra olimpiada")
+                cursor.close()
+                dbconexion.close()
+                return False
+
+            update_sql = "UPDATE Olimpiada SET year_olimpiada = %s WHERE id = %s"
+            update_valores = (year_nuevo, id)
+            cursor.execute(update_sql, update_valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al editar olimpiada: {e}")
+            return False
+
+    def eliminar(self, id):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = "DELETE FROM Olimpiada WHERE id = %s"
+            valores = (id,)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al eliminar olimpiada: {e}")
+            return False
+
+    def consultar(self, filter):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = f"SELECT * FROM Olimpiada WHERE {filter}"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            cursor.close()
+            dbconexion.close()
+            return result
+        except Error as e:
+            print(f"Error al consultar olimpiadas: {e}")
+            return []
+
+
+class GeneroMySQL(MySQLConnect):
+    def __init__(self):
+        super().__init__()
+
+    def insertar(self, id, nombre):
+        try:
+            existente = self.consultar(f"id = {id}")
+            if existente:
+                print(f"El género con ID {id} ya existe. No se insertará.")
+                return False
+
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = "INSERT INTO Genero(id, nombre) VALUES (%s, %s)"
+            valores = (id, nombre)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            print("Género insertado exitosamente:", cursor.lastrowid)
+            cursor.close()
+            dbconexion.close()
+            return True
+        except Error as e:
+            print(f"Error al insertar género: {e}")
+            return False
+
+    def editar(self, id, nombre_nuevo):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+
+            check_sql = "SELECT COUNT(*) FROM Genero WHERE nombre = %s AND id != %s"
+            check_valores = (nombre_nuevo, id)
+            cursor.execute(check_sql, check_valores)
+            if cursor.fetchone()[0] > 0:
+                print("El nombre ya existe para otro género")
+                cursor.close()
+                dbconexion.close()
+                return False
+
+            update_sql = "UPDATE Genero SET nombre = %s WHERE id = %s"
+            update_valores = (nombre_nuevo, id)
+            cursor.execute(update_sql, update_valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al editar género: {e}")
+            return False
+
+    def eliminar(self, id):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = "DELETE FROM Genero WHERE id = %s"
+            valores = (id,)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al eliminar género: {e}")
+            return False
+
+    def consultar(self, filter):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = f"SELECT * FROM Genero WHERE {filter}"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            cursor.close()
+            dbconexion.close()
+            return result
+        except Error as e:
+            print(f"Error al consultar géneros: {e}")
+            return []
+
+
+class ResultadosMySQL(MySQLConnect):
+    def __init__(self):
+        super().__init__()
+    def insertar(self, idOlimpiada, idPais, idGenero, oro, plata, bronce):
+        try:
+            if not all(isinstance(x, int) and x > 0 for x in [oro, plata, bronce]):
+                print("Los valores de oro, plata y bronce deben ser enteros positivos")
+                return False
+
+            existente = self.consultar(f"idOlimpiada = {idOlimpiada} AND idPais = {idPais} AND idGenero = {idGenero}")
+            if existente:
+                print(
+                    f"Ya existe un resultado para la olimpiada {idOlimpiada}, país {idPais} y género {idGenero}. Use editar() para actualizar.")
+                return False
+
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+            cursor = dbconexion.cursor()
+
+            cursor.execute(f"SELECT COUNT(*) FROM Olimpiada WHERE id = {idOlimpiada}")
+            if cursor.fetchone()[0] == 0:
+                print(f"No existe la olimpiada con ID {idOlimpiada}")
+                cursor.close()
+                dbconexion.close()
+                return False
+
+            cursor.execute(f"SELECT COUNT(*) FROM Pais WHERE id = {idPais}")
+            if cursor.fetchone()[0] == 0:
+                print(f"No existe el país con ID {idPais}")
+                cursor.close()
+                dbconexion.close()
+                return False
+
+            cursor.execute(f"SELECT COUNT(*) FROM Genero WHERE id = {idGenero}")
+            if cursor.fetchone()[0] == 0:
+                print(f"No existe el género con ID {idGenero}")
+                cursor.close()
+                dbconexion.close()
+                return False
+
+            sql = """
+                INSERT INTO Resultados(idOlimpiada, idPais, idGenero, oro, plata, bronce) 
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            valores = (idOlimpiada, idPais, idGenero, oro, plata, bronce)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            print("Resultado insertado exitosamente")
+            cursor.close()
+            dbconexion.close()
+            return True
+        except Error as e:
+            print(f"Error al insertar resultado: {e}")
+            return False
+
+    def editar(self, idOlimpiada, idPais, idGenero, oro, plata, bronce):
+        try:
+            if not all(isinstance(x, int) and x > 0 for x in [oro, plata, bronce]):
+                print("Los valores de oro, plata y bronce deben ser enteros positivos")
+                return False
+
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = """
+                UPDATE Resultados 
+                SET oro = %s, plata = %s, bronce = %s 
+                WHERE idOlimpiada = %s AND idPais = %s AND idGenero = %s
+            """
+            valores = (oro, plata, bronce, idOlimpiada, idPais, idGenero)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al editar resultado: {e}")
+            return False
+
+    def eliminar(self, idOlimpiada, idPais, idGenero):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = """
+                DELETE FROM Resultados 
+                WHERE idOlimpiada = %s AND idPais = %s AND idGenero = %s
+            """
+            valores = (idOlimpiada, idPais, idGenero)
+            cursor.execute(sql, valores)
+            dbconexion.commit()
+
+            resultado = cursor.rowcount > 0
+            cursor.close()
+            dbconexion.close()
+            return resultado
+        except Error as e:
+            print(f"Error al eliminar resultado: {e}")
+            return False
+
+    def consultar(self, filter):
+        try:
+            dbconexion = connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                port=self.port
+            )
+
+            cursor = dbconexion.cursor()
+            sql = f"SELECT * FROM Resultados WHERE {filter}"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+
+            cursor.close()
+            dbconexion.close()
+            return result
+        except Error as e:
+            print(f"Error al consultar resultados: {e}")
+            return []
+
+
+if __name__ == "__main__":
+
+    pais = PaisMySQL()
+    pais.insertar(1, "México",)
+    pais.insertar(3, "BRASIL", )
+
+    olimpiada = OlimpiadaMySQL()
+    olimpiada.insertar(1, 2024)
+
+
+    genero = GeneroMySQL()
+    genero.insertar(1, "Masculino")
+    genero.insertar(2, "Femenino")
+
+
+    resultados = ResultadosMySQL()
+    resultados.insertar(1, 1, 1, 10, 5, 3)
