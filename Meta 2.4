@@ -1,0 +1,97 @@
+Nombre: Robles Gómez Cristian Eduardo
+Grupo: 951
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import pandas as pd
+import numpy as np
+
+------------- Realizar una función que normalice los datos usando min-max que reciba como parámetro un DataFrame y otro parámetro que sea una lista de columnas a normalizar. Retornar el DataFrame con los datos normalizados.
+def normalizar_min_max(df, columnas):
+    """
+    Normaliza las columnas especificadas usando la normalización Min-Max.
+    
+    Args:
+        df (pandas.DataFrame): DataFrame original
+        columnas (list): Lista de nombres de columnas a normalizar
+        
+    Returns:
+        pandas.DataFrame: DataFrame con las columnas normalizadas
+    """
+    df_normalizado = df.copy()
+    for columna in columnas:
+        if columna in df.columns:
+            minimo = df[columna].min()
+            maximo = df[columna].max()
+            if maximo > minimo:
+                df_normalizado[columna] = (df[columna] - minimo) / (maximo - minimo)
+            else:
+                df_normalizado[columna] = 0  
+    return df_normalizado
+
+---------------------- Realizar una función que normalice los datos usando Z-Score que reciba como parámetro un DataFrame y otro parámetro que sea una lista de columnas a normalizar. Retornar el DataFrame con los datos normalizados.
+def normalizar_z_score(df, columnas):
+    """
+    Normaliza las columnas especificadas usando la normalización Z-Score.
+    
+    Args:
+        df (pandas.DataFrame): DataFrame original
+        columnas (list): Lista de nombres de columnas a normalizar
+        
+    Returns:
+        pandas.DataFrame: DataFrame con las columnas normalizadas
+    """
+    df_normalizado = df.copy()
+    
+    for columna in columnas:
+        if columna in df.columns:
+            media = df[columna].mean()
+            desv_est = df[columna].std()
+            if desv_est > 0:
+                df_normalizado[columna] = (df[columna] - media) / desv_est
+            else:
+                df_normalizado[columna] = 0  
+    return df_normalizado
+
+
+--------------------------- Realizar una función que normalice los datos usando escalado simple que reciba como parámetro un DataFrame y otro parámetro que sea una lista de columnas a normalizar. Retornar el DataFrame con los datos normalizados.
+def normalizar_escalado_simple(df, columnas):
+    """
+    Normaliza las columnas especificadas usando escalado simple (división por el máximo).
+    
+    Args:
+        df (pandas.DataFrame): DataFrame original
+        columnas (list): Lista de nombres de columnas a normalizar
+        
+    Returns:
+        pandas.DataFrame: DataFrame con las columnas normalizadas
+    """
+    df_normalizado = df.copy()
+    for columna in columnas:
+        if columna in df.columns:
+            maximo = df[columna].max()
+            if maximo > 0:
+                df_normalizado[columna] = df[columna] / maximo
+            else:
+                df_normalizado[columna] = 0  
+    return df_normalizado
+if __name__ == "__main__":
+    datos = {
+        'A': [1, 5, 10, 15, 20],
+        'B': [2, 4, 6, 8, 10],
+        'C': [100, 200, 300, 400, 500]
+    }
+    df = pd.DataFrame(datos)
+    
+    print("DataFrame original:")
+    print(df)
+    
+    print("\nNormalización Min-Max:")
+    df_min_max = normalizar_min_max(df, ['A', 'B', 'C'])
+    print(df_min_max)
+    
+    print("\nNormalización Z-Score:")
+    df_z_score = normalizar_z_score(df, ['A', 'B', 'C'])
+    print(df_z_score)
+    
+    print("\nNormalización por Escalado Simple:")
+    df_escalado = normalizar_escalado_simple(df, ['A', 'B', 'C'])
+    print(df_escalado)
