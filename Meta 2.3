@@ -1,0 +1,41 @@
+Nombre: Robles Gómez Cristian Eduardo
+Grupo: 951
+Fecha: 10 de abril
+
+import pandas as pd
+------------------------- 1. Porcentaje de valores nulos por columna -------------------------
+def porcentaje_nulos(df):
+    return df.isnull().mean() * 100
+
+------------------------- 2. Número de renglones duplicados -------------------------
+def renglones_duplicados(df):
+    return df.duplicated().sum()
+
+------------------------- 3. Eliminar columnas con alto porcentaje de nulos -------------------------
+def eliminar_columnas_nulas(df, max_porcentaje):
+    if not (0 <= max_porcentaje <= 1):
+        raise ValueError("El porcentaje máximo debe estar entre 0 y 1")
+    
+    porcentaje_nulos_col = df.isnull().mean()
+    columnas_a_eliminar = porcentaje_nulos_col[porcentaje_nulos_col >= max_porcentaje].index.tolist()
+    df.drop(columns=columnas_a_eliminar, inplace=True)
+    return columnas_a_eliminar
+
+------------------------- 4. Sustituir nulos por método especificado -------------------------
+def sustituir_nulos(df, columnas, metodo):
+    if metodo not in ['mean', 'bfill', 'ffill']:
+        raise ValueError("El método debe ser 'mean', 'bfill' o 'ffill'")
+    
+    for columna in columnas:
+        if metodo == 'mean':
+            if pd.api.types.is_numeric_dtype(df[columna]):
+                df[columna].fillna(df[columna].mean(), inplace=True)
+        else:
+            df[columna].fillna(method=metodo, inplace=True)
+    return df
+
+------------------------- 5. Eliminar renglones duplicados -------------------------
+def eliminar_renglones_duplicados(df):
+    cantidad_duplicados = df.duplicated().sum()
+    df.drop_duplicates(inplace=True)
+    return cantidad_duplicados
