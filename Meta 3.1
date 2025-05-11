@@ -1,0 +1,60 @@
+--- Nombre: Robles Gómez Cristian Eduardo
+--- Grupo: 951
+--- Fecha: 11 de mayo del 2025
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+datos = {
+    'Tienda': ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C'],
+    'Producto': ['Manzana', 'Plátano', 'Naranja', 'Manzana', 'Plátano', 'Naranja', 'Manzana', 'Plátano', 'Naranja'],
+    'Categoría': ['Fruta'] * 9,
+    'Precio': [30, 20, 35, 25, 30, 45, 35, 20, 25],
+    'Cantidad Vendida': [50, 30, 20, 60, 25, 35, 55, 20, 30],
+    'Calificación': ['A', 'B', 'C', 'A', 'B', 'A', 'C', 'B', 'A']
+}
+
+df = pd.DataFrame(datos)
+
+def asignar_codigos(df):
+    tienda_codigo = {'A': 1, 'B': 2, 'C': 3}
+    calificacion_valor = {'A': 3, 'B': 2, 'C': 1}
+    df['Código Tienda'] = df['Tienda'].map(tienda_codigo)
+    df['Calificación Numérica'] = df['Calificación'].map(calificacion_valor)
+    return df
+
+df = asignar_codigos(df)
+
+def total_ventas_por_tienda(df):
+    df['Total Venta'] = df['Precio'] * df['Cantidad Vendida']
+    return df.groupby('Tienda')['Total Venta'].sum().reset_index()
+
+ventas_tienda = total_ventas_por_tienda(df)
+
+def precio_promedio_por_tienda(df):
+    return df.groupby(['Tienda', 'Producto'])['Precio'].mean().reset_index()
+
+precio_promedio = precio_promedio_por_tienda(df)
+
+def cantidad_vendida_pivot(df):
+    return pd.pivot_table(df, values='Cantidad Vendida', index='Producto', columns='Tienda', aggfunc='sum', fill_value=0)
+
+pivot_cantidad = cantidad_vendida_pivot(df)
+
+def ventas_totales_pivot(df):
+    df['Total Venta'] = df['Precio'] * df['Cantidad Vendida']
+    return pd.pivot_table(df, values='Total Venta', index='Producto', columns='Tienda', aggfunc='sum', fill_value=0)
+
+pivot_ventas = ventas_totales_pivot(df)
+
+print("DataFrame con códigos:")
+print(df, "\n")
+
+print("Total de Ventas por Tienda:")
+print(ventas_tienda, "\n")
+
+print("Precio Promedio por Producto y Tienda:")
+print(precio_promedio, "\n")
+
+print("Cantidad Vendida (pivot table):")
+print(pivot_cantidad, "\n")
+
+print("Total de Ventas (pivot table):")
+print(pivot_ventas)
