@@ -1,0 +1,52 @@
+--- Nombre: Robles Gómez Cristian Eduardo
+--- Grupo: 951
+--- Fecha: 11 de mayo del 2025
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+import pandas as pd
+import numpy as np
+
+meses = ['Enero', 'Febrero', 'Marzo']
+productos = ['A', 'B', 'C']
+
+np.random.seed(42)
+datos = np.random.randint(100, 1001, size=(3, 3))
+
+ventas = pd.DataFrame(datos, index=meses, columns=productos)
+
+def seleccionar_loc(df, fila, columna=None):
+    if columna:
+        return df.loc[fila, columna]
+    return df.loc[fila]
+
+print("Producto A en enero:")
+print(seleccionar_loc(ventas, 'Enero', 'A'), "\n")
+
+print("Todos los productos en febrero:")
+print(seleccionar_loc(ventas, 'Febrero'), "\n")
+
+print("Todos los productos en enero y marzo:")
+print(seleccionar_loc(ventas, ['Enero', 'Marzo']), "\n")
+
+def seleccionar_iloc(df, fila, columna=None):
+    if columna is not None:
+        return df.iloc[fila, columna]
+    return df.iloc[fila]
+
+print("Ventas del primer mes (Enero):")
+print(seleccionar_iloc(ventas, 0), "\n")
+
+print("Ventas del segundo producto en todos los meses:")
+print(seleccionar_iloc(ventas, slice(None), 1), "\n")
+
+print("Ventas del segundo y tercer mes para el primer producto:")
+print(seleccionar_iloc(ventas, [1, 2], 0), "\n")
+
+def modificar_venta(df, mes, producto, nuevo_valor):
+    df.loc[mes, producto] = nuevo_valor
+    return df
+
+ventas = modificar_venta(ventas, 'Marzo', 'B', 1200)
+
+print("DataFrame actualizado (Producto B en marzo cambiado a 1200):")
+print(ventas)
