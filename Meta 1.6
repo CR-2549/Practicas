@@ -1,0 +1,65 @@
+----Ejecrcicio 1
+----Nombre: Robles Gómez Cristian Eduardo
+----Grupo: 951
+----Fecha: 9/3/2025
+
+import pandas as pd
+def crear_dataframe_ventas():
+    datos = {
+        'Mes': ['Enero', 'Febrero', 'Marzo', 'Abril'],
+        'Ventas': [30500, 35600, 28300, 33900],
+        'Gastos': [22000, 23400, 18100, 20700]
+    }
+    df = pd.DataFrame(datos)
+    print(df)
+    return df
+
+df_ventas = crear_dataframe_ventas()
+
+----Ejecrcicio 2
+----Nombre: Robles Gómez Cristian Eduardo
+----Grupo: 951
+----Fecha: 9/3/2025
+
+import pandas as pd
+def procesar_cotizacion(ruta_archivo):
+    df = pd.read_csv(ruta_archivo, sep=';', decimal=',', thousands='.')
+
+    df_estadisticas = pd.DataFrame({
+        'Mínimo': df.select_dtypes(include=['number']).min(),
+        'Máximo': df.select_dtypes(include=['number']).max(),
+        'Media': df.select_dtypes(include=['number']).mean()
+    })
+    return df, df_estadisticas
+
+ruta = r"C:\Users\egali\Desktop\Proyecto Unidad 1\pythonProject2\cotizacion.csv"
+df_original, df_stats = procesar_cotizacion(ruta)
+
+print("DataFrame original (primeras 5 filas):")
+print(df_original.head())
+print("\nEstadísticas:")
+print(df_stats)
+
+----Ejecrcicio 3
+----Nombre: Robles Gómez Cristian Eduardo
+----Grupo: 951
+----Fecha: 9/3/2025
+
+def analizar_titanic(ruta_archivo):
+    df = pd.read_csv(ruta_archivo)
+
+    print(f"Número de datos: {df.shape[0]} filas x {df.shape[1]} columnas")
+    print(f"Nombres de columnas: {df.columns.tolist()}")
+
+    print("\n10 primeras filas:")
+    print(df.head(10))
+
+    print("\n10 últimas filas:")
+    print(df.tail(10))
+
+    print("\n10 filas aleatorias:")
+    print(df.sample(10))
+    return df
+
+ruta = 'Datasets/titanic.csv'
+df_titanic = analizar_titanic(ruta)
